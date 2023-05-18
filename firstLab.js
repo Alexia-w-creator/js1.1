@@ -8,42 +8,58 @@ function brackets(str)
         open = ['{', '(', '['],
         close = ['}', ')', ']'],
         closeIndex, 
-        openIndex,
-        countB = 0;
+        openIndex;
+    // console.log(str);
+    // console.log(chars);
+    // len = chars.length;
+    // console.log(len);
+    // цикл не работает с len, если поставить чисто, то всё работает нормально
     for (i in str)
-    {     
+    {
+        // if(str[i] == '"')
+        // {
+        //     if(qmarks !== true)
+        //     {
+        //         qmarks = true;
+        //         continue;
+        //     }            
+        //     if(qmarks == true){
+        //         if(qmarksClose == false){
+        //             qmarksClose = true;
+        //         }
+        //     }
+        //     if(qmarks !== qmarksClose){
+        //         return false;
+        //     }
+        // }
+        
         openIndex = open.indexOf(str[i]);
-        // console.log(openIndex);
-        // consol e.log(str[i]);
+        console.log(openIndex);
+        console.log(str[i]);
         if(openIndex !== -1)
         {
             stack.push(openIndex);
-            countB++;
             continue;
         }
         
-        // console.log(stack)
+        console.log(stack)
         closeIndex = close.indexOf(str[i]);
         if(closeIndex !== -1)
         {
             if(stack.pop() !== closeIndex)
             {
-                document.getElementById('result').innerHTML+=countB;
-                document.getElementById('result').innerHTML+=" cкобки {}, [], () не сбалансированы";
-        
                 return false;
             }
 
         }
-        // console.log(closeIndex);
-        // console.log(str[i]);
+        console.log(closeIndex);
+        console.log(str[i]);
+        // document.getElementById('result').innerHTML+=closeIndex;
         
     }
         
     if(stack.length !== 0)
     {
-        document.getElementById('result').innerHTML+=countB;
-        document.getElementById('result').innerHTML+="<p>cкобки {}, [], () не сбалансированы</p>";
         return false;
     }
     return true;
@@ -51,21 +67,25 @@ function brackets(str)
 
 isJSON = function(json) {
 
-    is_json = true;
+    is_json = true; //true at first
+
+    //Try-catch and JSON.parse function is used here.
 
     try {
-        JSON.parse(json);
+        object = JSON.parse(json);
         document.getElementById('result').innerHTML+="<p>JSON валиден</p>";
     } catch (error) {
         is_json = false;
         document.getElementById('result').innerHTML+="<p>Json не валиден</p>";
+        console.log("might be a problem in key or value's data type");
+        // document.getElementById('result').innerHTML+="<p>might be a problem in key or value's data type</p>";
     }
 
     if (is_json !== true) {
         countCharacter = function(string,character) {
             count = 0;
             for (var i = 0; i < string.length; i++) {
-                if (string[i] == character) { //counting : or ,
+                if (string.charAt(i) == character) { //counting : or ,
                     count ++;
                 }
             }
@@ -74,61 +94,55 @@ isJSON = function(json) {
     
         json = json.trim(); // remove whitespace, start and end spaces
         bracks = brackets(json);
+        console.log(bracks);
         if (bracks !== true) {
-            // document.getElementById('result').innerHTML+="<p>Скобки {}, [], () не сбалансированы</p>";
-
-        } else if((countCharacter(json, '"')%2) !== 0)
-        {
+            console.log("Brackets {} are not balanced")
+            document.getElementById('result').innerHTML+="<p>Скобки {}, [], () не сбалансированы</p>";
+        } else if((countCharacter(json, '"')%2) !== 0){
             document.getElementById('result').innerHTML+="<p>Проблема в ключе или значении</p>";
-        } else
-        {
-            jsonsub = json.substring(1, json.length-1); //remove first and last brackets
-            jsoncol = jsonsub.split(',');
-            
-            col = true;
-            for (var i = 0; i < jsoncol.length; i++) {
-            
-                pairs = jsoncol[i];
-                if(pairs[0] !== '}'){
-                    if (pairs.indexOf(':') == -1) { //if colon not exist in b/w
-                        col = false;
-                    }
-                }
-            }
-
-            if(col !== true)
-            {
-                document.getElementById('result').innerHTML+="<p>Нет двоеточия между ключом и значением</p>";
-            } else 
-            {
-                jsoncom = jsonsub.split('{');
-                cmorcl = true;
-                for (var i = 0; i < jsoncom.length; i++) {
-                    
-                    pairs = jsoncom[i];
-                    
-                    if ( !(countCharacter(pairs,':')-1 == countCharacter(pairs, ',')) ){
-                        cmorcl = false;
-                    }
-                }
+        } else{
+            json = json.substring(1, json.length-1); //remove first and last brackets
+            json = json.split('{');
+            for (var i = 0; i < json.length; i++) {
                 
-                if(cmorcl !== true){
+                pairs = json[i];
+                
+                if ( !(countCharacter(json,':')-1 == countCharacter(json, ',')) ){
+                    console.log("comma or colon are not balanced");
                     document.getElementById('result').innerHTML+="<p>Запятая или двоеточие не сбалансированы</p>";
                 }
             }
+            
+    
         } 
+        // }else {
+    
+        //     json = json.substring(1, json.length-1); //remove first and last brackets
+        //     json = json.split(',');
+    
+    
+        //     for (var i = 0; i < json.length; i++) {
+            
+        //         pairs = json[i];
+        //         if (pairs.indexOf(':') == -1) { //if colon not exist in b/w
+        //             console.log("No colon b/w key and value");
+        //             document.getElementById('result').innerHTML+="<p>No colon b/w key and value</p>";
+        //         }
+        //     }
+        // }
     }
+    // return is_json;
 };
 
 function checkForm(event)
 {
     event.preventDefault();
     jsonfile=document.getElementById('form').json.value;
+    console.log(jsonfile);
     if(jsonfile=="")
         document.getElementById('error').innerHTML="<p>Введите файл</p>";
     else
     {
-        document.getElementById('result').innerHTML="";
         let valid = isJSON(jsonfile);
     }
 
