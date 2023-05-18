@@ -21,11 +21,6 @@ body {
     overflow: auto;
 }
 
-/* #left-block {
-    float: left;
-    width: 50%;
-} */
-
 #right-block {
     float: right;
     width: 50%;
@@ -40,13 +35,9 @@ body {
     margin: 30px;
 }
 
-#dimension {
-    width: 400px;
-    height: 450px;
-}
 #json{
-    width: 350px;
-    height: 400px;
+    width: 257px;
+    height: 325px;
 }
 
 #nameobject{
@@ -56,13 +47,11 @@ body {
 #error {
     color: red; 
     background-color:rgb(255, 255, 255);
-    /* width: 400px;
-    height: 250px; */
 }
 
 #result{
     color:#151515;
-    background-color:aliceblue
+    /* background-color:aliceblue */
 }
 
 .button:hover {
@@ -72,16 +61,4 @@ body {
     cursor: pointer;
     transform: scale(1.1);
 }
-
-/* .lines {
-    width: 100%;
-    margin-bottom: 3px;
-}
-
-.cell {
-    width: 30px;
-    height: 30px;
-    background: rgb(39, 38, 38);
-    color: #f9f3f4;
-} */
 

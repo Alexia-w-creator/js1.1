@@ -8,84 +8,98 @@ function brackets(str)
         open = ['{', '(', '['],
         close = ['}', ')', ']'],
         closeIndex, 
-        openIndex;
-    // console.log(str);
-    // console.log(chars);
-    // len = chars.length;
-    // console.log(len);
-    // цикл не работает с len, если поставить чисто, то всё работает нормально
+        openIndex,
+        countB = 0;
+ 
     for (i in str)
-    {
-        // if(str[i] == '"')
-        // {
-        //     if(qmarks !== true)
-        //     {
-        //         qmarks = true;
-        //         continue;
-        //     }            
-        //     if(qmarks == true){
-        //         if(qmarksClose == false){
-        //             qmarksClose = true;
-        //         }
-        //     }
-        //     if(qmarks !== qmarksClose){
-        //         return false;
-        //     }
-        // }
-        
+    {   
         openIndex = open.indexOf(str[i]);
-        console.log(openIndex);
-        console.log(str[i]);
         if(openIndex !== -1)
         {
             stack.push(openIndex);
+            countB++;
             continue;
         }
+
         
-        console.log(stack)
+        // console.log(stack)
         closeIndex = close.indexOf(str[i]);
+        // console.log(closeIndex);
         if(closeIndex !== -1)
         {
             if(stack.pop() !== closeIndex)
             {
+
+                document.getElementById('result').innerHTML+="<p>Cкобки {}, [], () не сбалансированы";
+        
                 return false;
             }
-
         }
-        console.log(closeIndex);
-        console.log(str[i]);
-        // document.getElementById('result').innerHTML+=closeIndex;
         
     }
-        
+ 
     if(stack.length !== 0)
     {
+        document.getElementById('result').innerHTML+="<p>Скобки {}, [], () не сбалансированы";
         return false;
     }
     return true;
 }
 
+function err(error, json){
+    error_ = String(error).split(' ');
+        typeError = error_[0];
+        pos = Number(error_[error_.length-1]);
+        console.log(pos);
+        let p= 0;
+        
+        let stroka = 0;
+        while(p < pos){
+        
+            if(json[p] == '\n'){
+                stroka++;
+            }
+            p++;
+        }
+        if(typeError == 'SyntaxError:')
+        {
+            document.getElementById('result').innerHTML+="Синтаксическая ошибка в строке ";
+            document.getElementById('result').innerHTML+=stroka;
+            // document.getElementById('result').innerHTML+="</p>";
+        }else
+        {
+            document.getElementById('result').innerHTML+="Ошибка в строке";
+            document.getElementById('result').innerHTML+=stroka;
+            // document.getElementById('result').innerHTML+="</p>";
+        }
+}
+
 isJSON = function(json) {
 
-    is_json = true; //true at first
 
-    //Try-catch and JSON.parse function is used here.
+
+    is_json = true;
+    let SyntaxError = 0;
+     
 
     try {
-        object = JSON.parse(json);
+        JSON.parse(json);
         document.getElementById('result').innerHTML+="<p>JSON валиден</p>";
     } catch (error) {
         is_json = false;
+        error_= error;
+        console.log(error);
         document.getElementById('result').innerHTML+="<p>Json не валиден</p>";
-        console.log("might be a problem in key or value's data type");
-        // document.getElementById('result').innerHTML+="<p>might be a problem in key or value's data type</p>";
+
+        
     }
 
+    
     if (is_json !== true) {
         countCharacter = function(string,character) {
             count = 0;
             for (var i = 0; i < string.length; i++) {
-                if (string.charAt(i) == character) { //counting : or ,
+                if (string[i] == character) { //counting : or ,
                     count ++;
                 }
             }
@@ -94,57 +108,75 @@ isJSON = function(json) {
     
         json = json.trim(); // remove whitespace, start and end spaces
         bracks = brackets(json);
-        console.log(bracks);
         if (bracks !== true) {
-            console.log("Brackets {} are not balanced")
-            document.getElementById('result').innerHTML+="<p>Скобки {}, [], () не сбалансированы</p>";
-        } else if((countCharacter(json, '"')%2) !== 0){
+            // document.getElementById('result').innerHTML+="<p>Скобки {}, [], () не сбалансированы</p>";
+            err(error_, json);
+
+        } else if((countCharacter(json, '"')%2) !== 0)
+        {
+            err(error_, json);
             document.getElementById('result').innerHTML+="<p>Проблема в ключе или значении</p>";
-        } else{
-            json = json.substring(1, json.length-1); //remove first and last brackets
-            json = json.split('{');
-            for (var i = 0; i < json.length; i++) {
-                
-                pairs = json[i];
-                
-                if ( !(countCharacter(json,':')-1 == countCharacter(json, ',')) ){
-                    console.log("comma or colon are not balanced");
-                    document.getElementById('result').innerHTML+="<p>Запятая или двоеточие не сбалансированы</p>";
+        } else
+        {
+            jsonsub = json.substring(1, json.length-1); //remove first and last brackets
+            jsoncol = jsonsub.split(',');
+            
+            col = true;
+            for (var i = 0; i < jsoncol.length; i++) {
+                some = jsoncol[i].split(':');
+                key = some[0];
+                pairs = jsoncol[i];
+                if(pairs[0] !== '}'){
+                    if (pairs.indexOf(':') == -1 && pairs.indexOf('"') !== -1) { //if colon not exist in b/w
+                        col = false;
+                        // key_ = key;
+                        break;
+                    }
                 }
             }
-            
+
+            if(col !== true)
+            {
+                document.getElementById('result').innerHTML+="<p>Нет двоеточия между";
+                document.getElementById('result').innerHTML+=key;
+                document.getElementById('result').innerHTML+="</p>";
+                
+
+            } else 
+            {
+                jsoncom = jsonsub.split('{');
+                cmorcl = true;
+                for (var i = 0; i < jsoncom.length; i++) {
+                    some = jsoncom[i].split(',');
+                    key = some[0];
+                    pairs = jsoncom[i];
+                    
+                    if ( !(countCharacter(pairs,':')-1 == countCharacter(pairs, ',')) ){
+                        cmorcl = false;
+                    }
+                }
+                
+                if(cmorcl !== true){
+                    document.getElementById('result').innerHTML+="<p>Запятая или двоеточие не сбалансированы в";
+                    document.getElementById('result').innerHTML+=key;
+                    document.getElementById('result').innerHTML+="</p>";
     
+                }
+            }
         } 
-        // }else {
-    
-        //     json = json.substring(1, json.length-1); //remove first and last brackets
-        //     json = json.split(',');
-    
-    
-        //     for (var i = 0; i < json.length; i++) {
-            
-        //         pairs = json[i];
-        //         if (pairs.indexOf(':') == -1) { //if colon not exist in b/w
-        //             console.log("No colon b/w key and value");
-        //             document.getElementById('result').innerHTML+="<p>No colon b/w key and value</p>";
-        //         }
-        //     }
-        // }
     }
-    // return is_json;
 };
 
 function checkForm(event)
 {
     event.preventDefault();
     jsonfile=document.getElementById('form').json.value;
-    console.log(jsonfile);
     if(jsonfile=="")
         document.getElementById('error').innerHTML="<p>Введите файл</p>";
     else
     {
+        document.getElementById('result').innerHTML="";
         let valid = isJSON(jsonfile);
     }
 
 }
-
